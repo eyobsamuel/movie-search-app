@@ -2,6 +2,14 @@
 
 This is a [Next.js](https://nextjs.org) project for searching movies using the OMDB API.
 
+## Live Demo
+
+[https://movie-search-app-lime-seven.vercel.app/](https://movie-search-app-lime-seven.vercel.app/)
+
+## Video Demo
+
+[Watch the video](./Movie-Search-App-Demo.mp4)
+
 ## Getting Started
 
 ### Prerequisites
