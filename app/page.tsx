@@ -1,101 +1,93 @@
-import Image from "next/image";
+"use client";
+import SearchInput from "@/components/ui/search-input";
+import { useEffect, useState } from "react";
+import { useDebounce } from "@/hooks/useDebounce";
+import { useLazySearchMoviesQuery } from "@/store/movie-api-slice";
+import MovieList from "./../components/ui/movie-list";
+import { useSearchParams } from "next/navigation";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const searchParams = useSearchParams();
+  const q = searchParams.get("q");
+  const [searchTerm, setSearchTerm] = useState(q || "");
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+  const [loading, setLoading] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
+  const [trigger, { data, error, isFetching }] = useLazySearchMoviesQuery();
+
+  useEffect(() => {
+    if (q && q.length >= 3) {
+      trigger(q);
+    }
+  }, [q, trigger]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (debouncedSearchTerm) {
+      params.set("q", debouncedSearchTerm);
+    } else {
+      params.delete("q");
+    }
+    window.history.pushState(null, "", `?${params.toString()}`);
+  }, [debouncedSearchTerm]);
+
+  useEffect(() => {
+    if (debouncedSearchTerm.length >= 3) {
+      const req = trigger(debouncedSearchTerm);
+      return () => {
+        req.abort();
+      };
+    }
+  }, [debouncedSearchTerm, trigger]);
+
+  const handleInputChange = (newSearchTerm: string) => {
+    const trimmedTerm = newSearchTerm.trim();
+    setSearchTerm(trimmedTerm);
+    setLoading(true);
+  };
+
+  useEffect(() => {
+    if (!isFetching) {
+      setLoading(false);
+    }
+  }, [isFetching]);
+
+  const renderContent = () => {
+    if (searchTerm.length < 3) {
+      return (
+        <p className="text-center">
+          Please type at least 3 characters to search.
+        </p>
+      );
+    }
+
+    if (error) {
+      return <p className="text-center">Error fetching movies</p>;
+    }
+
+    if (data?.Response === "True" || isFetching) {
+      return (
+        <MovieList
+          movies={data?.Search?.slice(0, 3) || []}
+          isLoading={isFetching || loading}
+        />
+      );
+    }
+
+    if (data?.Response === "False") {
+      return <p className="text-center">{data?.Error}</p>;
+    }
+
+    return null;
+  };
+
+  return (
+    <div className="flex flex-col items-center min-h-screen p-8 bg-gray-100 text-gray-700">
+      <main className="flex flex-col items-center gap-8 w-full max-w-2xl bg-white rounded-lg shadow-md p-6">
+        <h1 className="text-2xl font-bold text-center">Movie Search App</h1>
+        <SearchInput handleInputChange={handleInputChange} value={searchTerm} />
+        <div className="w-full">{renderContent()}</div>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
   );
 }
