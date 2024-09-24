@@ -5,6 +5,7 @@ import MovieDetailSkeleton from "@/components/ui/movie-detail-skeleton";
 import { useGetMovieDetailsQuery } from "@/store/movie-api-slice";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { useRouter } from "next/navigation";
 
 const MovieDetail: React.FC = () => {
@@ -130,4 +131,10 @@ const MovieDetail: React.FC = () => {
   );
 };
 
-export default MovieDetail;
+export default function MovieDetailPage() {
+  return (
+    <Suspense fallback={<MovieDetailSkeleton />}>
+      <MovieDetail />
+    </Suspense>
+  );
+}

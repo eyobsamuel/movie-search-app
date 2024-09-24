@@ -1,6 +1,6 @@
 "use client";
 import SearchInput from "@/components/ui/search-input";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useLazySearchMoviesQuery } from "@/store/movie-api-slice";
 import MovieList from "./../components/ui/movie-list";
@@ -86,7 +86,11 @@ export default function Home() {
       <main className="flex flex-col items-center gap-8 w-full max-w-2xl bg-white rounded-lg shadow-md p-6">
         <h1 className="text-2xl font-bold text-center">Movie Search App</h1>
         <SearchInput handleInputChange={handleInputChange} value={searchTerm} />
-        <div className="w-full">{renderContent()}</div>
+        <div className="w-full">
+          <Suspense fallback={<div>Loading...</div>}>
+            {renderContent()}
+          </Suspense>
+        </div>
       </main>
     </div>
   );
