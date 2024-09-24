@@ -6,7 +6,7 @@ import { useLazySearchMoviesQuery } from "@/store/movie-api-slice";
 import MovieList from "./../components/ui/movie-list";
 import { useSearchParams } from "next/navigation";
 
-export default function Home() {
+function SearchMovies() {
   const searchParams = useSearchParams();
   const q = searchParams.get("q");
   const [searchTerm, setSearchTerm] = useState(q || "");
@@ -82,17 +82,22 @@ export default function Home() {
   };
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <div className="flex flex-col items-center min-h-screen p-8 bg-gray-100 text-gray-700">
-        <main className="flex flex-col items-center gap-8 w-full max-w-2xl bg-white rounded-lg shadow-md p-6">
-          <h1 className="text-2xl font-bold text-center">Movie Search App</h1>
-          <SearchInput
-            handleInputChange={handleInputChange}
-            value={searchTerm}
-          />
-          <div className="w-full">{renderContent()}</div>
-        </main>
-      </div>
-    </Suspense>
+    <>
+      <SearchInput handleInputChange={handleInputChange} value={searchTerm} />
+      <div className="w-full">{renderContent()}</div>
+    </>
+  );
+}
+
+export default function Home() {
+  return (
+    <div className="flex flex-col items-center min-h-screen p-8 bg-gray-100 text-gray-700">
+      <main className="flex flex-col items-center gap-8 w-full max-w-2xl bg-white rounded-lg shadow-md p-6">
+        <h1 className="text-2xl font-bold text-center">Movie Search App</h1>
+        <Suspense fallback={<div>Loading search...</div>}>
+          <SearchMovies />
+        </Suspense>
+      </main>
+    </div>
   );
 }
