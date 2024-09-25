@@ -8,7 +8,7 @@ This is a [Next.js](https://nextjs.org) project for searching movies using the O
 
 ## Video Demo
 
-[Watch the video](./Movie-Search-App-Demo.mp4)
+[Watch the video](https://github.com/user-attachments/assets/1b16d6f8-ce4b-48fa-98ca-c78c4fab7bef)
 
 ## Getting Started
 
