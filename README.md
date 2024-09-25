@@ -10,6 +10,25 @@ This is a [Next.js](https://nextjs.org) project for searching movies using the O
 
 [Watch the video](https://github.com/user-attachments/assets/1b16d6f8-ce4b-48fa-98ca-c78c4fab7bef)
 
+## Technologies Used
+
+- **Next.js**: React framework for server-side rendering and static site generation.
+- **React**: JavaScript library for building user interfaces.
+- **Redux Toolkit**: State management library.
+- **Tailwind CSS**: Utility-first CSS framework.
+- **TypeScript**: Typed superset of JavaScript.
+- **OMDB API**: API for fetching movie data.
+
+## Features
+
+- **Movie Search**: Search for movies by title.
+- **Debounced Search**: Optimized search with debounce to reduce API calls.
+- **Movie Details**: View detailed information about a selected movie.
+- **Loading Skeletons**: Display loading skeletons while fetching data.
+- **Responsive Design**: Mobile-friendly and responsive UI.
+- **Accessible Design**: Compliance with Web Accessibility Guidelines-Section 508
+- **Error Handling**: Graceful error handling for API requests.
+
 ## Getting Started
 
 ### Prerequisites
